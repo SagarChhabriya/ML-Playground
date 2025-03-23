@@ -5,14 +5,15 @@ import os
 
 st.set_page_config("Admission Chance",page_icon="🎟️")
 
-# Load the model
+# Function to resolve the model path
 def get_model_path():
+    # Check if running on Streamlit Cloud
     if "STREAMLIT_CLOUD" in os.environ:
-        # Path for cloud
+        # Path for Streamlit Cloud
         return "02-addmission-chance/model.pkl"
     else:
-        # Path for local env
-        return "model.pkl"
+        # Path for local environment
+        return os.path.join(os.path.dirname(__file__), "model.pkl")
     
 with open(get_model_path(),'rb') as file: 
     model = pickle.load(file)
