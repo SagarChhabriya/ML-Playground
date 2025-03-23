@@ -5,7 +5,7 @@ import os
 
 # Load the model
 try:
-    with open("./model.pkl", "rb") as file:
+    with open("01-salary-predictor/model.pkl", "rb") as file:
         model = pickle.load(file)
 except FileNotFoundError:
     st.error("Error: The file 'model.pkl' was not found. Please ensure it is in the correct directory.")
