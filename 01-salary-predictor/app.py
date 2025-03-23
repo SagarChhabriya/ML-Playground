@@ -4,6 +4,8 @@ import pickle
 import os
 
 
+#  Set Browser Tab Title & Icon
+st.set_page_config(page_title="Salary Predictor", page_icon="💸")
 
 # To make the code work both locally and on Streamlit Cloud, you can use a dynamic approach to resolve the file path. 
 
