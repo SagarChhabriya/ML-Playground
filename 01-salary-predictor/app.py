@@ -4,10 +4,12 @@ import pickle
 import os
 
 # Load the model
-model_dir = os.path.abspath("model.pkl")
-
-with open(model_dir, 'rb') as file:
-    model = pickle.load(file)
+try:
+    with open("./model.pkl", "rb") as file:
+        model = pickle.load(file)
+except FileNotFoundError:
+    st.error("Error: The file 'model.pkl' was not found. Please ensure it is in the correct directory.")
+    st.stop()
 
 
 # Title of the App
