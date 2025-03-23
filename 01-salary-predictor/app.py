@@ -1,10 +1,12 @@
 import streamlit as st 
 import numpy as np 
 import pickle
-
+import os
 
 # Load the model
-with open("model.pkl", 'rb') as file:
+model_dir = os.path.abspath("model.pkl")
+
+with open(model_dir, 'rb') as file:
     model = pickle.load(file)
 
 
