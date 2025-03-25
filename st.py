@@ -68,13 +68,13 @@ st.metric(label='temp',value='273 K', delta='1.2 K')
 st.header("Part 3. Display Media")
 
 st.caption("st.image('path', caption='human image')")
-st.image(r"D:\Ao\Code\MISC\WebCode\Web-Engineering\100-Days-of-Code\Week-1\images\about-1.jpg",caption='Sagar Chhabriya',use_column_width="always")
+# st.image(r"D:\Ao\Code\MISC\WebCode\Web-Engineering\100-Days-of-Code\Week-1\images\about-1.jpg",caption='Sagar Chhabriya',use_column_width="always")
 
 st.caption('st.audio("data")')
-st.audio(r"C:\Users\Mr Sagar Kumar\Desktop\ReelAudio-24822.mp3")
+# st.audio(r"C:\Users\Mr Sagar Kumar\Desktop\ReelAudio-24822.mp3")
 
 st.caption('st.video("data")')
-st.video(r"E:\  \Aditya Rikhari\Aditya Rikhari - AANA NAHI (original).mp4")
+# st.video(r"E:\  \Aditya Rikhari\Aditya Rikhari - AANA NAHI (original).mp4")
 
 
 
@@ -330,3 +330,5 @@ st.plotly_chart(fig)
 z = np.random.randn(10,10)
 fig = px.imshow(z, color_continuous_scale='Viridis', title="Heatmap Example")
 st.plotly_chart(fig)
+
+
