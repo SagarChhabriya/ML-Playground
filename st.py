@@ -301,9 +301,32 @@ chart = alt.Chart(data).mark_bar().encode(
 st.altair_chart(chart, use_container_width=True)
 
 # 5.8  Map
+st.subheader("Map")
+st.code("""
+data = pd.DataFrame({
+    'lat': [37.7749, 34.0522, 40.7128],
+    'lon':[-122.4194, -118.2437, -74.0060]
+})
+st.map(data)
+""")
 
 data = pd.DataFrame({
     'lat': [37.7749, 34.0522, 40.7128],
     'lon':[-122.4194, -118.2437, -74.0060]
 })
 st.map(data)
+
+
+# 9. HeatMap
+st.subheader("Heat Map")
+
+st.code('''
+z = np.random.randn(10,10)
+fig = px.imshow(z, color_continuous_scale='Viridis', title="Heatmap Example")
+st.plotly_chart(fig)        
+''')
+
+
+z = np.random.randn(10,10)
+fig = px.imshow(z, color_continuous_scale='Viridis', title="Heatmap Example")
+st.plotly_chart(fig)
