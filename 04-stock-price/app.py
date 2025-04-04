@@ -2,10 +2,10 @@ import streamlit as st
 import pandas as pd
 import yfinance as yf
  
-# Add a title to the Streamlit app
-st.write("""
-# Stock Price App         
-""")
+# Set the page configuration with an icon
+st.set_page_config(page_title="Upstok", page_icon="bull-market.png")
+
+st.write("# UpStok")
 
 # List of predefined ticker symbols for the selectbox
 ticker_options = ['AAPL', 'GOOGL', 'MSFT', 'AMZN', 'TSLA', 'META', 'NFLX', 'SPY']
