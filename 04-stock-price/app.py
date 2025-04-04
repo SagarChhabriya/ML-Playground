@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import yfinance as yf
-
+ 
 # Add a title to the Streamlit app
 st.write("""
 # Stock Price App         
