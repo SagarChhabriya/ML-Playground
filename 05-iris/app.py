@@ -55,5 +55,8 @@ prediction = model.predict(df)
 flower_names = iris.target_names
 predicted_flower = flower_names[prediction][0]
 
+st.subheader('Class labels')
+st.write(iris.target_names)
+
 st.subheader("Prediction")
 st.success(f"The predicted species is: **{predicted_flower}**")
