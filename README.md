@@ -15,4 +15,5 @@
 6. **🌷 [IRIS Flower Classifier](https://irislab.streamlit.app/)**
    An interactive app that predicts the species of an Iris flower based on user-inputted sepal and petal measurements using a RandomForest classifier.
 
-
+7. **💰 [California Housing](https://calihouse.streamlit.app/)**
+   An interactive app that predicts the median house value in California based on user-inputted features using a pre-trained Random Forest model.
