@@ -12,3 +12,7 @@
 5. **📈 [Stock Price App](https://upstok.streamlit.app/)**  
    UpStok allows users to track and visualize historical stock data, including closing prices and trading volume, for selected companies over a specified date range.
 
+6. **🌷 [IRIS Flower Classifier](https://irislab.streamlit.app/)**
+   An interactive app that predicts the species of an Iris flower based on user-inputted sepal and petal measurements using a RandomForest classifier.
+
+

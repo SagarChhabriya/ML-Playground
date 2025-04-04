@@ -43,20 +43,17 @@ def train_model():
 # Load the trained model once
 model, iris = train_model()
 
-# Collecting the user input
+# Collecting and Displaying the user input
 df = input_features()
 
-# Displaying the values inputted by the user
 st.subheader("Parameter Values")
 st.write(df)
 
 # Step 4: Predict the flower species based on the user's input
 prediction = model.predict(df)
 
-# Mapping the prediction to the corresponding flower name
 flower_names = iris.target_names
 predicted_flower = flower_names[prediction][0]
 
-# Displaying the prediction result
 st.subheader("Prediction")
 st.success(f"The predicted species is: **{predicted_flower}**")
