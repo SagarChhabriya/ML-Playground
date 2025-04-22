@@ -42,4 +42,4 @@ research = st.number_input("Research",min_value=0,max_value=1, value=0)
 result = model.predict([[gre_score,tofel_score,uni_rating,sop,lor,cgpa,research]])
 
 if st.button("Predict Chance"):
-    st.success(0 if np.round(result[0],2)<0 else np.round(result[0],2))
+    st.success(0 if np.round(result[0],2)<0 else 100 if np.round(result[0],2)>1 else np.round(result[0],2)*100)
