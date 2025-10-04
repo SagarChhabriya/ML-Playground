@@ -18,26 +18,81 @@ Adjust the parameters below and click **Predict** to see the result!
 # Load the trained model and scaler with error handling
 @st.cache_resource
 def load_model():
-    model_dir = 'models'
     try:
-        # Check if files exist before trying to load them
-        if not os.path.exists(model_dir):
-            raise FileNotFoundError(f"The directory {model_dir} does not exist.")
+        # Get the current directory and check for models in different possible locations
+        current_dir = os.path.dirname(os.path.abspath(__file__))
         
-        model = joblib.load(os.path.join(model_dir, 'logistic_regression_model.pkl'))
-        scaler = joblib.load(os.path.join(model_dir, 'scaler.pkl'))
-        feature_names = joblib.load(os.path.join(model_dir, 'feature_names.pkl'))
+        # Possible model directory paths to try
+        possible_paths = [
+            'models',  # Same directory as app.py
+            './models',  # Relative path
+            os.path.join(current_dir, 'models'),  # Absolute path from current directory
+            '..',  # Parent directory (in case app is in a subfolder)
+            '../models',  # Parent models directory
+        ]
+        
+        model_path = None
+        scaler_path = None
+        features_path = None
+        
+        # Debug: Show current directory structure
+        st.sidebar.info(f"Current directory: {current_dir}")
+        
+        for path in possible_paths:
+            test_model_path = os.path.join(path, 'logistic_regression_model.pkl')
+            test_scaler_path = os.path.join(path, 'scaler.pkl') 
+            test_features_path = os.path.join(path, 'feature_names.pkl')
+            
+            if (os.path.exists(test_model_path) and 
+                os.path.exists(test_scaler_path) and 
+                os.path.exists(test_features_path)):
+                model_path = test_model_path
+                scaler_path = test_scaler_path
+                features_path = test_features_path
+                st.sidebar.success(f"Found models in: {path}")
+                break
+        
+        if not model_path:
+            # List what we found for debugging
+            st.sidebar.error("Could not find model files in any expected location")
+            st.sidebar.write("Searching in:", possible_paths)
+            
+            # Show directory contents for debugging
+            st.sidebar.write("Current directory contents:")
+            try:
+                for item in os.listdir('.'):
+                    st.sidebar.write(f" - {item}")
+            except Exception as e:
+                st.sidebar.write(f"Could not list directory: {e}")
+            
+            return None, None, None
+        
+        # Load the models
+        model = joblib.load(model_path)
+        scaler = joblib.load(scaler_path)
+        feature_names = joblib.load(features_path)
+        
         st.success("✅ Model loaded successfully!")
         return model, scaler, feature_names
+        
     except FileNotFoundError as e:
         st.error(f"❌ Model files not found: {e}")
-        st.info("Please make sure the model files are in the 'models' directory:")
-        st.info("- logistic_regression_model.pkl")
-        st.info("- scaler.pkl") 
-        st.info("- feature_names.pkl")
+        st.info("""
+        **Please ensure your GitHub repository has this structure:**
+        ```
+        your-repo/
+        ├── app.py
+        ├── requirements.txt
+        └── models/
+            ├── logistic_regression_model.pkl
+            ├── scaler.pkl
+            └── feature_names.pkl
+        ```
+        """)
         return None, None, None
     except Exception as e:
         st.error(f"❌ Error loading model: {e}")
+        st.info("This might be due to version compatibility issues.")
         return None, None, None
 
 model, scaler, feature_names = load_model()
@@ -97,29 +152,24 @@ with col4:
 if st.button('Predict Churn Probability', type="primary"):
     if model is None or scaler is None or feature_names is None:
         st.error("Cannot make prediction - model not loaded properly.")
+        st.info("""
+        **To fix this:**
+        1. Make sure your GitHub repository has a 'models' folder
+        2. The models folder should contain:
+           - logistic_regression_model.pkl
+           - scaler.pkl
+           - feature_names.pkl
+        3. Push these files to your GitHub repository
+        """)
     else:
         try:
             # Prepare input data - align with training feature names
-            # Create a properly formatted input DataFrame
             formatted_data = {}
-            
-            # Map the input features to the expected feature names
-            feature_mapping = {
-                'Call Failure': 'Call Failure',
-                'Complains': 'Complains', 
-                'Subscription Length': 'Subscription Length',
-                'Charge Amount': 'Charge Amount',
-                'Seconds of Use': 'Seconds of Use',
-                'Frequency of SMS': 'Frequency of SMS',
-                'Distinct Called Numbers': 'Distinct Called Numbers',
-                'Age': 'Age'
-            }
             
             for expected_feature in feature_names:
                 # Find the corresponding input feature
-                input_feature = expected_feature
-                if input_feature in input_df.columns:
-                    formatted_data[expected_feature] = input_df[input_feature].iloc[0]
+                if expected_feature in input_df.columns:
+                    formatted_data[expected_feature] = input_df[expected_feature].iloc[0]
                 else:
                     # Try to find a close match
                     matched = False
@@ -186,7 +236,6 @@ if st.button('Predict Churn Probability', type="primary"):
             st.info("Debug information:")
             st.write(f"Input features: {list(input_df.columns)}")
             st.write(f"Expected features: {feature_names}")
-            st.write(f"Formatted data keys: {list(formatted_data.keys())}")
 
 # Add some insights
 st.markdown("---")
@@ -205,12 +254,8 @@ st.markdown("""
 - Consider loyalty programs
 """)
 
-# Footer
-st.markdown("---")
-st.markdown("*Built with Logistic Regression • Customer Churn Prediction*")
-
-# Debug section (collapsed by default)
-with st.expander("Debug Information"):
-    if feature_names:
-        st.write("Expected feature names:", feature_names)
-    st.write("Input feature names:", list(input_df.columns))
+# Deployment instructions in sidebar
+st.sidebar.markdown("---")
+st.sidebar.header("🚀 Deployment Help")
+st.sidebar.markdown("""
+**Required Repository Structure:**
