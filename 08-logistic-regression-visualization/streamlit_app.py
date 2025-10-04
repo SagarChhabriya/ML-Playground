@@ -6,6 +6,9 @@ from sklearn.datasets import make_blobs
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 
+st.set_page_config(page_title="LogReg Visualizer", page_icon="✨")
+
+
 
 
 
@@ -96,3 +99,4 @@ if st.sidebar.button('Run Algorithm'):
 
     except ValueError as e:
         st.error(f"Invalid parameter combination: {e}")
+
