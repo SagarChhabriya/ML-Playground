@@ -4,6 +4,7 @@ import numpy as np
 import joblib
 from sklearn.preprocessing import StandardScaler
 import sys
+import os 
 
 # Streamlit app
 st.set_page_config(page_title="Customer Churn Prediction", page_icon="✨", layout="wide")
@@ -17,10 +18,15 @@ Adjust the parameters below and click **Predict** to see the result!
 # Load the trained model and scaler with error handling
 @st.cache_resource
 def load_model():
+    model_dir = 'models'
     try:
-        model = joblib.load('models/logistic_regression_model.pkl')
-        scaler = joblib.load('models/scaler.pkl')
-        feature_names = joblib.load('models/feature_names.pkl')
+        # Check if files exist before trying to load them
+        if not os.path.exists(model_dir):
+            raise FileNotFoundError(f"The directory {model_dir} does not exist.")
+        
+        model = joblib.load(os.path.join(model_dir, 'logistic_regression_model.pkl'))
+        scaler = joblib.load(os.path.join(model_dir, 'scaler.pkl'))
+        feature_names = joblib.load(os.path.join(model_dir, 'feature_names.pkl'))
         st.success("✅ Model loaded successfully!")
         return model, scaler, feature_names
     except FileNotFoundError as e:
