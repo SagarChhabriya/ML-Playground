@@ -4,6 +4,8 @@ import numpy as np
 import joblib
 import os
 
+st.set_page_config(page_title="Stress Level Predictor", page_icon="✨")
+
 # --------------------------------------------
 # Load the trained model, scaler, and columns
 # --------------------------------------------
@@ -323,3 +325,4 @@ with col2:
         - Smoking: Yes
         - High caffeine
         """)
+
