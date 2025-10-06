@@ -76,21 +76,29 @@ def preprocess_input():
     # Create raw numeric array
     raw_numeric = np.array([[age, bmi, caffeine_mg, coffee_intake, sleep_hours, heart_rate, physical_activity_hours]])
     
-    # Debug: Show raw values
-    st.write("🔍 **Debug - Raw Numeric Values:**")
+    debug_info = {
+        'raw_values': {},
+        'scaled_values': {},
+        'non_zero_features': {},
+        'input_shape': None,
+        'scaling_success': True
+    }
+    
+    # Store raw values
     for i, col in enumerate(numeric_features):
-        st.write(f"  {col}: {raw_numeric[0, i]}")
+        debug_info['raw_values'][col] = raw_numeric[0, i]
     
     try:
         scaled_numeric = scaler.transform(raw_numeric)
         
-        st.write("🔍 **Debug - Scaled Numeric Values:**")
+        # Store scaled values
         for i, col in enumerate(numeric_features):
-            st.write(f"  {col}: {scaled_numeric[0, i]:.4f}")
+            debug_info['scaled_values'][col] = scaled_numeric[0, i]
             
     except Exception as e:
-        st.error(f"Scaling error: {e}")
-        # If scaling fails, use raw values (not ideal but for debugging)
+        debug_info['scaling_success'] = False
+        debug_info['scaling_error'] = str(e)
+        # If scaling fails, use raw values
         scaled_numeric = raw_numeric
 
     for i, col in enumerate(numeric_features):
@@ -107,7 +115,7 @@ def preprocess_input():
     if gender_col in df_input.columns:
         df_input.at[0, gender_col] = 1
     else:
-        st.warning(f"⚠️ Gender column '{gender_col}' not found in features")
+        debug_info['gender_warning'] = f"Gender column '{gender_col}' not found"
 
     country_col = f'Country_{country}'
     if country_col in df_input.columns:
@@ -115,7 +123,7 @@ def preprocess_input():
     elif 'Country_Other' in df_input.columns:
         df_input.at[0, 'Country_Other'] = 1
     else:
-        st.warning(f"⚠️ Country column for '{country}' not found")
+        debug_info['country_warning'] = f"Country column for '{country}' not found"
 
     occupation_col = f'Occupation_{occupation}'
     if occupation_col in df_input.columns:
@@ -123,25 +131,23 @@ def preprocess_input():
     elif 'Occupation_Other' in df_input.columns:
         df_input.at[0, 'Occupation_Other'] = 1
     else:
-        st.warning(f"⚠️ Occupation column for '{occupation}' not found")
+        debug_info['occupation_warning'] = f"Occupation column for '{occupation}' not found"
 
-    # Debug: Show final feature vector
-    st.write("🔍 **Debug - Final Feature Values (non-zero only):**")
+    # Store non-zero features
     non_zero_features = df_input.loc[0][df_input.loc[0] != 0]
     for feature, value in non_zero_features.items():
-        st.write(f"  {feature}: {value}")
-
-    return df_input
+        debug_info['non_zero_features'][feature] = value
+    
+    debug_info['input_shape'] = df_input.shape
+    
+    return df_input, debug_info
 
 # --------------------------------------------
 # Prediction Button
 # --------------------------------------------
 if st.button("🔍 Predict Stress Level"):
     with st.spinner("Processing..."):
-        X_user = preprocess_input()
-        
-        # Debug: Show what we're sending to the model
-        st.write("🔍 **Debug - Input shape to model:**", X_user.shape)
+        X_user, debug_info = preprocess_input()
         
         try:
             # Get both prediction and probabilities
@@ -166,9 +172,6 @@ if st.button("🔍 Predict Stress Level"):
                 st.metric("High Stress", f"{probabilities[2]:.1%}",
                          delta="✓" if prediction == 2 else "")
             
-            # Show raw probabilities
-            st.write("**Raw probabilities:**", [f"{p:.4f}" for p in probabilities])
-            
             # Model analysis
             st.subheader("🔍 Model Analysis")
             
@@ -181,6 +184,114 @@ if st.button("🔍 Predict Stress Level"):
             
         except Exception as e:
             st.error(f"Prediction error: {e}")
+
+# --------------------------------------------
+# Debug Information (Collapsible)
+# --------------------------------------------
+with st.expander("🔧 Debug Information", expanded=False):
+    st.subheader("Current Input Values")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.write("**Personal Info:**")
+        st.write(f"- Age: {age}")
+        st.write(f"- Gender: {gender}")
+        st.write(f"- Country: {country}")
+        st.write(f"- Occupation: {occupation}")
+        st.write(f"- BMI: {bmi}")
+        st.write(f"- Heart Rate: {heart_rate}")
+    
+    with col2:
+        st.write("**Lifestyle Factors:**")
+        st.write(f"- Coffee Intake: {coffee_intake} cups")
+        st.write(f"- Caffeine: {caffeine_mg} mg")
+        st.write(f"- Sleep: {sleep_hours} hours")
+        st.write(f"- Sleep Quality: {sleep_quality}")
+        st.write(f"- Physical Activity: {physical_activity_hours} hrs/wk")
+        st.write(f"- Smoking: {'Yes' if smoking == 1 else 'No'}")
+        st.write(f"- Alcohol: {'Yes' if alcohol_consumption == 1 else 'No'}")
+    
+    if st.button("Run Debug Analysis", type="secondary"):
+        with st.spinner("Running debug..."):
+            X_user, debug_info = preprocess_input()
+            
+            st.subheader("🔍 Feature Processing Debug")
+            
+            # Raw values
+            st.write("**Raw Input Values:**")
+            raw_df = pd.DataFrame.from_dict(debug_info['raw_values'], orient='index', columns=['Value'])
+            st.dataframe(raw_df)
+            
+            # Scaled values
+            if debug_info['scaling_success']:
+                st.write("**Scaled Values:**")
+                scaled_df = pd.DataFrame.from_dict(debug_info['scaled_values'], orient='index', columns=['Scaled Value'])
+                st.dataframe(scaled_df.style.format("{:.4f}"))
+            else:
+                st.error(f"Scaling failed: {debug_info.get('scaling_error', 'Unknown error')}")
+            
+            # Non-zero features
+            st.write("**Non-Zero Features in Final Input:**")
+            if debug_info['non_zero_features']:
+                non_zero_df = pd.DataFrame.from_dict(debug_info['non_zero_features'], orient='index', columns=['Value'])
+                st.dataframe(non_zero_df)
+            else:
+                st.warning("No non-zero features found!")
+            
+            # Warnings
+            if 'gender_warning' in debug_info:
+                st.warning(debug_info['gender_warning'])
+            if 'country_warning' in debug_info:
+                st.warning(debug_info['country_warning'])
+            if 'occupation_warning' in debug_info:
+                st.warning(debug_info['occupation_warning'])
+            
+            st.write(f"**Input Shape to Model:** {debug_info['input_shape']}")
+            
+            # Test prediction with current inputs
+            try:
+                prediction = model.predict(X_user)[0]
+                probabilities = model.predict_proba(X_user)[0]
+                
+                st.subheader("🔮 Debug Prediction Results")
+                st.write(f"**Prediction:** {stress_level_map_reverse[prediction]} (class {prediction})")
+                st.write("**Probabilities:**")
+                prob_df = pd.DataFrame({
+                    'Class': ['Low', 'Medium', 'High'],
+                    'Probability': probabilities
+                })
+                st.dataframe(prob_df.style.format({'Probability': '{:.4f}'}))
+                
+                # Feature importance insight (for tree-based models)
+                if hasattr(model, 'feature_importances_'):
+                    st.subheader("📈 Feature Importances (Top 10)")
+                    feature_imp = pd.DataFrame({
+                        'feature': feature_columns,
+                        'importance': model.feature_importances_
+                    }).sort_values('importance', ascending=False).head(10)
+                    st.dataframe(feature_imp)
+                
+            except Exception as e:
+                st.error(f"Debug prediction failed: {e}")
+
+# --------------------------------------------
+# Model Information
+# --------------------------------------------
+with st.expander("ℹ️ Model Information", expanded=False):
+    st.write(f"**Model type:** {type(model).__name__}")
+    st.write(f"**Number of features:** {len(feature_columns)}")
+    
+    if hasattr(model, 'classes_'):
+        st.write(f"**Model classes:** {model.classes_}")
+    
+    if hasattr(model, 'n_neighbors'):
+        st.write(f"**KNN neighbors:** {model.n_neighbors}")
+    
+    # Show feature columns in a scrollable box
+    st.write("**All feature columns:**")
+    features_text = "\n".join(feature_columns)
+    st.text_area("Feature list", features_text, height=150, label_visibility="collapsed")
 
 # --------------------------------------------
 # Test with Extreme Values
@@ -212,20 +323,3 @@ with col2:
         - Smoking: Yes
         - High caffeine
         """)
-
-# --------------------------------------------
-# Model Information
-# --------------------------------------------
-with st.expander("🔧 Model Information"):
-    st.write(f"**Model type:** {type(model).__name__}")
-    st.write(f"**Number of features:** {len(feature_columns)}")
-    st.write(f"**Feature columns:** {feature_columns}")
-    
-    # Show first few features
-    st.write("**First 10 features:**", feature_columns[:10])
-    
-    if hasattr(model, 'classes_'):
-        st.write(f"**Model classes:** {model.classes_}")
-    
-    if hasattr(model, 'n_neighbors'):
-        st.write(f"**KNN neighbors:** {model.n_neighbors}")
