@@ -7,6 +7,7 @@ import os
 # --------------------------------------------
 # Load the trained model, scaler, and columns
 # --------------------------------------------
+
 @st.cache_resource
 def load_model():
     # File names
@@ -14,10 +15,8 @@ def load_model():
     scaler_file = 'scaler.joblib'
     columns_file = 'feature_columns.joblib'
 
-    # Absolute path to current script
     current_dir = os.path.dirname(os.path.abspath(__file__))
 
-    # Full paths to files (root dir)
     model_path = os.path.join(current_dir, model_file)
     scaler_path = os.path.join(current_dir, scaler_file)
     columns_path = os.path.join(current_dir, columns_file)
@@ -26,11 +25,13 @@ def load_model():
         model = joblib.load(model_path)
         scaler = joblib.load(scaler_path)
         feature_columns = joblib.load(columns_path)
-        st.success("Loaded model from root directory.")
+        st.success("✅ Loaded model and preprocessing files.")
         return model, scaler, feature_columns
     else:
-        st.error("Required files not found in root directory.")
+        st.error("❌ Required files not found in root directory.")
         st.stop()
+
+model, scaler, feature_columns = load_model()
 
 # --------------------------------------------
 # Mappings
@@ -108,4 +109,5 @@ if st.button("🔍 Predict Stress Level"):
     prediction = model.predict(X_user)[0]
     stress_level = stress_level_map_reverse[prediction]
     st.success(f"🎯 Predicted Stress Level: **{stress_level}**")
+
 
