@@ -4,11 +4,45 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import joblib
+import os
 
-# Load model, scaler, and feature columns saved during training
-model = joblib.load('best_knn_model.joblib')
-scaler = joblib.load('scaler.joblib')
-feature_columns = joblib.load('feature_columns.joblib')
+
+@st.cache_resource
+def load_model():
+    # Filenames expected
+    model_file = 'best_knn_model.joblib'
+    scaler_file = 'scaler.joblib'
+    columns_file = 'feature_columns.joblib'
+
+    # Get the current directory where this script is running
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+
+    # Possible relative and absolute paths to check
+    possible_dirs = [
+        '.',  # Current directory
+        'models',
+        './models',
+        os.path.join(current_dir, 'models'),
+        '..',
+        '../models',
+    ]
+
+    # Try each path
+    for path in possible_dirs:
+        model_path = os.path.join(path, model_file)
+        scaler_path = os.path.join(path, scaler_file)
+        columns_path = os.path.join(path, columns_file)
+
+        if os.path.exists(model_path) and os.path.exists(scaler_path) and os.path.exists(columns_path):
+            model = joblib.load(model_path)
+            scaler = joblib.load(scaler_path)
+            feature_columns = joblib.load(columns_path)
+            st.success(f"Model and scaler loaded from: {path}")
+            return model, scaler, feature_columns
+
+    # If none of the paths worked, raise an error
+    st.error("Could not find model, scaler, or feature columns files in expected locations.")
+    st.stop()
 
 # Mappings for ordinal variables
 sleep_quality_map = {'Poor': 0, 'Fair': 1, 'Good': 2, 'Excellent': 3}
@@ -77,3 +111,4 @@ if st.button("Predict Stress Level"):
     prediction = model.predict(X_user)[0]
     stress_pred = stress_level_map_reverse[prediction]
     st.success(f"Predicted Stress Level: {stress_pred}")
+
