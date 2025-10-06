@@ -4,6 +4,9 @@ import numpy as np
 import joblib
 import os
 
+
+st.set_page_config(page_title="Stress Level Predictor", page_icon="✨")
+
 # --------------------------------------------
 # Load the trained model, scaler, and columns
 # --------------------------------------------
@@ -109,5 +112,6 @@ if st.button("🔍 Predict Stress Level"):
     prediction = model.predict(X_user)[0]
     stress_level = stress_level_map_reverse[prediction]
     st.success(f"🎯 Predicted Stress Level: **{stress_level}**")
+
 
 
