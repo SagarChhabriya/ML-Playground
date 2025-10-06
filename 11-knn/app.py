@@ -9,40 +9,28 @@ import os
 # --------------------------------------------
 @st.cache_resource
 def load_model():
-    # Filenames
+    # File names
     model_file = 'best_knn_model.joblib'
     scaler_file = 'scaler.joblib'
     columns_file = 'feature_columns.joblib'
 
-    # Get current directory of the script
+    # Absolute path to current script
     current_dir = os.path.dirname(os.path.abspath(__file__))
 
-    # Possible locations
-    possible_dirs = [
-        '.', 'models', './models',
-        os.path.join(current_dir, 'models'),
-        '..', '../models',
-    ]
+    # Full paths to files (root dir)
+    model_path = os.path.join(current_dir, model_file)
+    scaler_path = os.path.join(current_dir, scaler_file)
+    columns_path = os.path.join(current_dir, columns_file)
 
-    # Check and load
-    for path in possible_dirs:
-        model_path = os.path.join(path, model_file)
-        scaler_path = os.path.join(path, scaler_file)
-        columns_path = os.path.join(path, columns_file)
-
-        if all(os.path.exists(p) for p in [model_path, scaler_path, columns_path]):
-            model = joblib.load(model_path)
-            scaler = joblib.load(scaler_path)
-            feature_columns = joblib.load(columns_path)
-            st.success(f"✅ Model loaded from: {path}")
-            return model, scaler, feature_columns
-
-    st.error("❌ Required files not found: best_knn_model.joblib, scaler.joblib, feature_columns.joblib.")
-    st.stop()
-
-# Load once
-with st.spinner("Loading model..."):
-    model, scaler, feature_columns = load_model()
+    if all(os.path.exists(p) for p in [model_path, scaler_path, columns_path]):
+        model = joblib.load(model_path)
+        scaler = joblib.load(scaler_path)
+        feature_columns = joblib.load(columns_path)
+        st.success("Loaded model from root directory.")
+        return model, scaler, feature_columns
+    else:
+        st.error("Required files not found in root directory.")
+        st.stop()
 
 # --------------------------------------------
 # Mappings
@@ -53,7 +41,7 @@ stress_level_map_reverse = {0: 'Low', 1: 'Medium', 2: 'High'}
 # --------------------------------------------
 # UI Header
 # --------------------------------------------
-st.title("🧠 Stress Level Predictor")
+st.title("Stress Level Predictor")
 st.markdown("Predict your stress level based on health and lifestyle inputs.")
 
 # --------------------------------------------
@@ -120,3 +108,4 @@ if st.button("🔍 Predict Stress Level"):
     prediction = model.predict(X_user)[0]
     stress_level = stress_level_map_reverse[prediction]
     st.success(f"🎯 Predicted Stress Level: **{stress_level}**")
+
