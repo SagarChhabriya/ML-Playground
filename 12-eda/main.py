@@ -47,9 +47,17 @@ This dashboard provides insights into the Pakistani property market based on dat
 Explore property trends, prices, and distributions across different cities and property types.
 """)
 
-data_file = "zameen-property.csv"
+# Detect the directory where the script is running
 current_dir = os.path.dirname(os.path.abspath(__file__))
-data_file_path = os.path.join(current_dir, data_file)
+
+# Correct filename (no folder prefix)
+data_file_path = os.path.join(current_dir, "zameen-property.csv")
+
+
+if not os.path.exists(data_file_path):
+    st.error(f"File NOT found: {data_file_path}")
+    st.write("📂 Files in this directory:", os.listdir(current_dir))
+    st.stop()
 
 # Load data with all transformations from the notebook
 @st.cache_data
