@@ -47,7 +47,7 @@ This dashboard provides insights into the Pakistani property market based on dat
 Explore property trends, prices, and distributions across different cities and property types.
 """)
 
-data_file = r"12-eda\zameen-property.csv"
+data_file = "12-eda/zameen-property.csv"
 current_dir = os.path.dirname(os.path.abspath(__file__))
 data_file_path = os.path.join(current_dir, data_file)
 
