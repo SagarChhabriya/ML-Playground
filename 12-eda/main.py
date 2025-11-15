@@ -48,7 +48,7 @@ Explore property trends, prices, and distributions across different cities and p
 
 # Load data with all transformations from the notebook
 @st.cache_data
-def load_data(file_path='Property.csv'):
+def load_data(file_path='./property.csv'):
     # Load the actual dataset
     try:
         df = pd.read_csv(file_path, sep=';')
