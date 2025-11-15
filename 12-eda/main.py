@@ -1177,7 +1177,7 @@ if not filtered_df.empty and filtered_df['latitude'].notna().any() and filtered_
     center_lat = filtered_df['latitude'].mean()
     center_lon = filtered_df['longitude'].mean()
 
-    fig_map = px.scatter_mapbox(
+    fig_map = px.scatter_map(
         filtered_df,
         lat="latitude",
         lon="longitude",
