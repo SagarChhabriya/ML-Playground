@@ -53,7 +53,7 @@ data_file_path = os.path.join(current_dir, data_file)
 
 # Load data with all transformations from the notebook
 @st.cache_data
-def load_data(file_path='./property.csv'):
+def load_data(file_path=data_file_path):
     # Load the actual dataset
     try:
         df = pd.read_csv(file_path, sep=';')
