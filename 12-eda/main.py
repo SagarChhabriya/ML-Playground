@@ -646,55 +646,55 @@ with col_q10:
     else:
         st.info("Q10: No data for current filters.")
 
-# -------------------------------------------------------------------
-# 8. Location Analysis (Map + City stats)
-# -------------------------------------------------------------------
+# # -------------------------------------------------------------------
+# # 8. Location Analysis (Map + City stats)
+# # -------------------------------------------------------------------
 
-st.markdown('<h2 class="section-header">🗺️ Location Analysis</h2>', unsafe_allow_html=True)
+# st.markdown('<h2 class="section-header">🗺️ Location Analysis</h2>', unsafe_allow_html=True)
 
-if not filtered_df.empty and filtered_df['latitude'].notna().any() and filtered_df['longitude'].notna().any():
-    center_lat = filtered_df['latitude'].mean()
-    center_lon = filtered_df['longitude'].mean()
+# if not filtered_df.empty and filtered_df['latitude'].notna().any() and filtered_df['longitude'].notna().any():
+#     center_lat = filtered_df['latitude'].mean()
+#     center_lon = filtered_df['longitude'].mean()
 
-    fig_map = px.scatter_map(
-        filtered_df,
-        lat="latitude",
-        lon="longitude",
-        color="price",
-        size="area_in_marla",
-        hover_name="property_type",
-        hover_data=["city", "location", "price", "area_in_marla", "baths", "bedrooms"],
-        title="Property Locations in Pakistan",
-        zoom=5,
-        height=500,
-        color_continuous_scale=px.colors.cyclical.IceFire
-    )
+#     fig_map = px.scatter_map(
+#         filtered_df,
+#         lat="latitude",
+#         lon="longitude",
+#         color="price",
+#         size="area_in_marla",
+#         hover_name="property_type",
+#         hover_data=["city", "location", "price", "area_in_marla", "baths", "bedrooms"],
+#         title="Property Locations in Pakistan",
+#         zoom=5,
+#         height=500,
+#         color_continuous_scale=px.colors.cyclical.IceFire
+#     )
 
-    fig_map.update_layout(
-        mapbox_style="open-street-map",
-        mapbox=dict(
-            center=dict(lat=center_lat, lon=center_lon),
-            zoom=5
-        ),
-        margin={"r": 0, "t": 30, "l": 0, "b": 0}
-    )
+#     fig_map.update_layout(
+#         mapbox_style="open-street-map",
+#         mapbox=dict(
+#             center=dict(lat=center_lat, lon=center_lon),
+#             zoom=5
+#         ),
+#         margin={"r": 0, "t": 30, "l": 0, "b": 0}
+#     )
 
-    st.plotly_chart(fig_map, use_container_width=True)
+#     st.plotly_chart(fig_map, use_container_width=True)
 
-    st.subheader("City-wise Property Distribution")
-    city_stats = (
-        filtered_df
-        .groupby('city')
-        .agg({
-            'price': ['count', 'mean', 'median'],
-            'area_in_marla': 'mean'
-        })
-        .round(2)
-    )
-    city_stats.columns = ['Property Count', 'Avg Price (PKR)', 'Median Price (PKR)', 'Avg Area (Marla)']
-    st.dataframe(city_stats.sort_values('Property Count', ascending=False))
-else:
-    st.info("No valid latitude/longitude data available for the selected filters to display on the map.")
+#     st.subheader("City-wise Property Distribution")
+#     city_stats = (
+#         filtered_df
+#         .groupby('city')
+#         .agg({
+#             'price': ['count', 'mean', 'median'],
+#             'area_in_marla': 'mean'
+#         })
+#         .round(2)
+#     )
+#     city_stats.columns = ['Property Count', 'Avg Price (PKR)', 'Median Price (PKR)', 'Avg Area (Marla)']
+#     st.dataframe(city_stats.sort_values('Property Count', ascending=False))
+# else:
+#     st.info("No valid latitude/longitude data available for the selected filters to display on the map.")
 
 # -------------------------------------------------------------------
 # 9. Footer
