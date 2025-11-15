@@ -580,27 +580,24 @@ Explore property trends, prices, and distributions across different cities and p
 # 2. Data loading helpers
 # -------------------------------------------------------------------
 
-def resolve_data_path() -> str:
-    """
-    Try multiple possible locations for zameen-property.csv.
-    Returns a valid path or stops the app with an error.
-    """
+def resolve_data_path():
     possible_paths = [
-        "zameen-property.csv",
+        "zameen-property.csv",                          # if running inside 12-eda
         "./zameen-property.csv",
+        "12-eda/zameen-property.csv",                   # correct path on Streamlit Cloud
         os.path.join(os.getcwd(), "zameen-property.csv"),
-        # User's explicit Windows path (will work only on their machine)
-        r"D:\Ao\Code\AI\ML-Playground\12-eda\zameen-property.csv"
+        os.path.join(os.getcwd(), "12-eda", "zameen-property.csv"),
     ]
 
     for path in possible_paths:
         if os.path.exists(path):
             return path
 
-    st.error("❌ Could not find 'zameen-property.csv' in any known location.")
-    st.write("📂 Current working directory:", os.getcwd())
-    st.write("📄 Files here:", os.listdir(os.getcwd()))
+    st.error("❌ Could not find 'zameen-property.csv'.")
+    st.write("📂 Working directory:", os.getcwd())
+    st.write("📄 Files:", os.listdir(os.getcwd()))
     st.stop()
+
 
 
 @st.cache_data
