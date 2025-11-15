@@ -505,18 +505,18 @@ with col_q6:
     st.subheader("Area–Price Correlation Table")
     if not filtered_df.empty:
 
-        def safe_corr(d):
-            if d['area_in_marla'].count() < 2 or d['price'].count() < 2:
+        def safe_corr(group):
+            df_sub = group[['area_in_marla', 'price']].dropna()
+            if len(df_sub) < 2:
                 return np.nan
-            return d['area_in_marla'].corr(d['price'])
+            return df_sub['area_in_marla'].corr(df_sub['price'])
 
         correlation_df = (
             filtered_df
-            .groupby(['city', 'property_type'], include_groups=False)  # type: ignore
-            .apply(safe_corr)
+            .groupby(['city', 'property_type'])
+            .apply(lambda g: safe_corr(g.reset_index(drop=True)))
             .reset_index(name='correlation')
         )
-
 
         correlation_df['correlation_strength'] = correlation_df['correlation'].apply(
             lambda x: 'Highly Correlated'
@@ -529,6 +529,7 @@ with col_q6:
             .sort_values('correlation', ascending=False)
             .fillna('N/A')
         )
+
         st.caption("""
         **Insight:** Area is **highly correlated** with price (|corr| ≥ 0.5) mainly for larger or more uniform segments. 
         For smaller units or mixed segments, correlation weakens.
