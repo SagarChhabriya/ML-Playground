@@ -504,12 +504,19 @@ with col_q7:
 with col_q6:
     st.subheader("Area–Price Correlation Table")
     if not filtered_df.empty:
+
+        def safe_corr(d):
+            if d['area_in_marla'].count() < 2 or d['price'].count() < 2:
+                return np.nan
+            return d['area_in_marla'].corr(d['price'])
+
         correlation_df = (
             filtered_df
             .groupby(['city', 'property_type'], include_groups=False)  # type: ignore
-            .apply(lambda d: d['area_in_marla'].corr(d['price']))
+            .apply(safe_corr)
             .reset_index(name='correlation')
         )
+
 
         correlation_df['correlation_strength'] = correlation_df['correlation'].apply(
             lambda x: 'Highly Correlated'
