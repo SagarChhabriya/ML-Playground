@@ -6,6 +6,7 @@ import seaborn as sns
 import plotly.express as px
 import plotly.graph_objects as go 
 from datetime import datetime
+import os
 
 # Set page configuration
 st.set_page_config(
@@ -45,6 +46,10 @@ st.markdown("""
 This dashboard provides insights into the Pakistani property market based on data from Zameen.com.
 Explore property trends, prices, and distributions across different cities and property types.
 """)
+
+data_file = "property.csv"
+current_dir = os.path.dirname(os.path.abspath(__file__))
+data_file_path = os.path.join(current_dir, data_file)
 
 # Load data with all transformations from the notebook
 @st.cache_data
